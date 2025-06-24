@@ -1,157 +1,176 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmação de Presença | Pietro & Kleber</title>
-  <style>
-    body {
-      background-color: #f5f5f5;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      color: #333;
-      padding: 20px;
-    }
-    .container {
-      background-color: white;
-      border-radius: 12px;
-      padding: 20px;
-      max-width: 500px;
-      margin: 0 auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    input {
-      padding: 10px;
-      width: 80%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-    .btn-yes {
-      background-color: #4CAF50;
-    }
-    .btn-yes:hover {
-      background-color: #45a049;
-    }
-    .btn-no {
-      background-color: #f44336;
-    }
-    .btn-no:hover {
-      background-color: #e53935;
-    }
-    ul {
-      text-align: left;
-      padding: 0;
-      list-style: none;
-    }
-    li {
-      background-color: #eee;
-      margin: 4px 0;
-      padding: 6px 10px;
-      border-radius: 6px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Confirmação de Presença | Pietro & Kleber</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    text-align: center;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 480px;
+    background: #fff;
+    margin: auto;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+  }
+  input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .btn-yes {
+    background-color: #4caf50;
+  }
+  .btn-yes:hover {
+    background-color: #45a049;
+  }
+  .btn-no {
+    background-color: #f44336;
+  }
+  .btn-no:hover {
+    background-color: #e53935;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    text-align: left;
+  }
+  li {
+    background: #eee;
+    margin: 5px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Confirmação de Presença 🎉</h1>
-    <p>Aniversário Pietro & Kleber - 24/06/2025</p>
-    <p>Local: Espetaria Coronel - 19h30</p>
+<div class="container">
+  <h1>Confirmação de Presença 🎉</h1>
+  <p>Aniversário Pietro & Kleber - 24/06/2025</p>
+  <p>Local: Espetaria Coronel - 19h30</p>
 
-    <input type="text" id="nameInput" placeholder="Digite seu nome">
+  <input type="text" id="nameInput" placeholder="Digite seu nome" />
 
-    <div>
-      <button class="btn-yes" onclick="confirmPresence('Vou')">Vou 🎈</button>
-      <button class="btn-no" onclick="confirmPresence('Não Vou')">Não Vou 😢</button>
-    </div>
-
-    <div class="counts">
-      <p>✅ Confirmados: <span id="yesCount">0</span></p>
-      <p>❌ Não vão: <span id="noCount">0</span></p>
-    </div>
-
-    <div class="list">
-      <h3>✅ Quem vai:</h3>
-      <ul id="yesList"></ul>
-
-      <h3>❌ Quem não vai:</h3>
-      <ul id="noList"></ul>
-    </div>
+  <div>
+    <button class="btn-yes" onclick="confirmPresence(true)">Vou 🎈</button>
+    <button class="btn-no" onclick="confirmPresence(false)">Não Vou 😢</button>
   </div>
 
-  <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycbygqrNbrCTqEGE2gX1yHsC249DtJNS3BRWcsiIOH_W7vc5OS__5lXxC5X1UY5BOQD5X/exec";
+  <div>
+    <p>✅ Confirmados: <span id="yesCount">0</span></p>
+    <ul id="yesList"></ul>
 
-    async function fetchList() {
-      try {
-        const response = await fetch(apiURL);
-        const data = await response.json();
+    <p>❌ Não vão: <span id="noCount">0</span></p>
+    <ul id="noList"></ul>
+  </div>
+</div>
 
-        const yesList = data.filter(item => item.status === "Vou").map(i => i.nome);
-        const noList = data.filter(item => item.status === "Não Vou").map(i => i.nome);
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-        document.getElementById("yesCount").innerText = yesList.length;
-        document.getElementById("noCount").innerText = noList.length;
+<script>
+  // TODO: Substitua as configurações abaixo pelas suas do Firebase (passo 3)
+  const firebaseConfig = {
+    apiKey: "AIzaSyACG0wZnHaf5iQTOvQ3yXrnP1mz5AUhqFQ",
+  authDomain: "presen-ac699.firebaseapp.com",
+  databaseURL: "https://presen-ac699-default-rtdb.firebaseio.com",
+  projectId: "presen-ac699",
+  storageBucket: "presen-ac699.firebasestorage.app",
+  messagingSenderId: "919151822453",
+  appId: "1:919151822453:web:d22238a270381e29079a3c",
+  measurementId: "G-2V26LQ97F0"
+  };
 
-        const yesListEl = document.getElementById("yesList");
-        const noListEl = document.getElementById("noList");
+  // Inicializa o Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-        yesListEl.innerHTML = "";
-        noListEl.innerHTML = "";
-
-        yesList.forEach(name => {
-          const li = document.createElement("li");
-          li.innerText = name;
-          yesListEl.appendChild(li);
-        });
-
-        noList.forEach(name => {
-          const li = document.createElement("li");
-          li.innerText = name;
-          noListEl.appendChild(li);
-        });
-      } catch (error) {
-        console.error("Erro ao carregar a lista:", error);
-      }
+  function confirmPresence(isGoing) {
+    const name = document.getElementById('nameInput').value.trim();
+    if (!name) {
+      alert('Por favor, digite seu nome.');
+      return;
     }
 
-    async function confirmPresence(status) {
-      const name = document.getElementById("nameInput").value.trim();
-      if (name === "") {
-        alert("Por favor, digite seu nome.");
-        return;
-      }
+    // Cria um objeto com nome e status
+    const data = {
+      nome: name,
+      status: isGoing ? 'Vou' : 'Não Vou',
+      timestamp: Date.now()
+    };
 
-      const payload = { nome: name, status: status };
+    // Salva no Firebase com key única para cada pessoa (usar nome + timestamp para evitar sobrescrita)
+    const newKey = db.ref().child('confirmacoes').push().key;
+    const updates = {};
+    updates['/confirmacoes/' + newKey] = data;
 
-      try {
-        await fetch(apiURL, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: { "Content-Type": "application/json" }
-        });
+    db.ref().update(updates)
+      .then(() => {
+        document.getElementById('nameInput').value = '';
+        alert('Obrigado pela confirmação!');
+      })
+      .catch(err => {
+        console.error('Erro ao salvar:', err);
+        alert('Erro ao salvar. Tente novamente.');
+      });
+  }
 
-        document.getElementById("nameInput").value = "";
-        fetchList();
-      } catch (error) {
-        console.error("Erro ao enviar dados:", error);
-        alert("Erro ao enviar, tente novamente.");
-      }
-    }
+  // Escuta mudanças na lista e atualiza a tela
+  const yesListEl = document.getElementById('yesList');
+  const noListEl = document.getElementById('noList');
+  const yesCountEl = document.getElementById('yesCount');
+  const noCountEl = document.getElementById('noCount');
 
-    window.onload = fetchList;
-  </script>
+  db.ref('confirmacoes').on('value', snapshot => {
+    const data = snapshot.val() || {};
+    const yesList = [];
+    const noList = [];
+
+    Object.values(data).forEach(item => {
+      if (item.status === 'Vou') yesList.push(item.nome);
+      else if (item.status === 'Não Vou') noList.push(item.nome);
+    });
+
+    yesListEl.innerHTML = '';
+    noListEl.innerHTML = '';
+
+    yesList.forEach(name => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      yesListEl.appendChild(li);
+    });
+
+    noList.forEach(name => {
+      const li = document.createElement('li');
+      li.textContent = name;
+      noListEl.appendChild(li);
+    });
+
+    yesCountEl.textContent = yesList.length;
+    noCountEl.textContent = noList.length;
+  });
+</script>
 
 </body>
 </html>
