@@ -91,9 +91,8 @@
     </div>
 
 <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycb123456abcdefg/exec";
+    const apiURL = "https://script.google.com/macros/s/AKfycbygqrNbrCTqEGE2gX1yHsC249DtJNS3BRWcsiIOH_W7vc5OS__5lXxC5X1UY5BOQD5X/exec";
 
-    // Carrega os dados da planilha
     async function fetchList() {
         try {
             const response = await fetch(apiURL);
@@ -127,7 +126,6 @@
         }
     }
 
-    // Envia confirmação
     async function confirmPresence(status) {
         const name = document.getElementById("nameInput").value.trim();
         if (name === "") {
